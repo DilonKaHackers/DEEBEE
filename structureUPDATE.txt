@@ -35,8 +35,14 @@ public:
     void remove_Key(const x& key);
     // Remove multiple keys
     void remove_multiple_Keys(const vector<x>& keys);
+    //update multiple keys and values
+    void update_multiple_Keys(const vector<x>& keys, const vector<y>& vals);
+    //update key value
+    void update_key(const x& key, const y& val);
+    //clear the Data map for DataHolder
+    void clearData();
     //prints Data map
-    void printData() const;
+    void printData();
 };
 
 
