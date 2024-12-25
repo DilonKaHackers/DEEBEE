@@ -19,7 +19,7 @@ private:
 public:
     //DataHolder Constructors
     DataHolder(const string& name) : ID(name) {}
-    
+
     DataHolder() {
         cout << "Enter Name for the DataHolder : ";
         cin >> this->ID;
@@ -31,35 +31,43 @@ public:
     unordered_map<x, y> getData() const { return this->Data; }
     void showCollectionNames() {
 
-        for (int i = 0;i< namesOfCollections.size();i++) {
+        cout << "Collections for " << this->ID << " : ";
+        for (int i = 0;i < namesOfCollections.size();i++) {
             cout << namesOfCollections[i] << " ";
         }
+        cout << endl;
     }
 
     //Setters
     //updates vector to know what collections the dataHolder is in
-    void updateInCollectionVector (string& collectionName) {
-        namesOfCollections.push_back(collectionName); 
+    void addInCollectionVector(string& collectionName) {
+        namesOfCollections.push_back(collectionName);
     }
+
+    void removeFromCollectionVector(string& collectionName) {
+        namesOfCollections.erase(find(namesOfCollections.begin(), namesOfCollections.end(), collectionName));
+    }
+
+    //functions
     // Add a key with a default value
     void add_Key(const x& key) {
         if (Data.find(key) != Data.end()) {
-            cout << "Key: " << key << " already exists in " << this->ID <<"." << endl;
+            cout << "Key: " << key << " already exists in " << this->ID << "." << endl;
         }
         else {
             Data[key] = y();
-            cout << "Key : " << key << " added successfully to " << this->ID <<"." << endl;
+            cout << "Key : " << key << " added successfully to " << this->ID << "." << endl;
         }
     }
 
     // Add a key-value pair
     void add_KeyValue_pair(const x& key, const y& val) {
         if (Data.find(key) != Data.end()) {
-            cout << "Key: " << key << " already exists in " << this->ID <<"." << endl;
+            cout << "Key: " << key << " already exists in " << this->ID << "." << endl;
         }
         else {
             Data[key] = val;
-            cout << "Key : " << key << ", Value : " << val << " added successfully to " << this->ID <<"." << endl;
+            cout << "Key : " << key << ", Value : " << val << " added successfully to " << this->ID << "." << endl;
         }
     }
 
@@ -103,7 +111,7 @@ public:
     }
 
     void printData() const {
-        cout <<endl<< "DataHolder : " << this->ID;
+        cout << endl << "DataHolder : " << this->ID;
         cout << endl << "{" << endl;
         for (const auto& pair : Data) {
             cout << pair.first << " : " << pair.second << endl;
