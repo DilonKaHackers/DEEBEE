@@ -1,5 +1,5 @@
-#ifndef DATAHOLDER_H
-#define DATAHOLDER_H
+#ifndef DATAHOLDER_HPP
+#define DATAHOLDER_HPP
 
 #include <unordered_map>
 #include <string>
@@ -13,17 +13,14 @@ template<typename x, typename y>
 class DataHolder {
 private:
     vector <string> namesOfCollections;
-    string ID;
+    string ID = "NULL_ID";
     unordered_map<x, y> Data;
 
 public:
     //DataHolder Constructors
     DataHolder(const string& name) : ID(name) {}
 
-    DataHolder() {
-        cout << "Enter Name for the DataHolder : ";
-        cin >> this->ID;
-    }
+    DataHolder() = default;
 
     //DataHolder Functions
     // Getters
@@ -36,6 +33,18 @@ public:
             cout << namesOfCollections[i] << " ";
         }
         cout << endl;
+    }
+
+    bool checkKey(x& key) {
+        bool ans = false;
+        if (this->Data.find(key) != this->Data.end()) {
+            ans = true;
+        }
+        return ans;
+    }
+
+    y getValue(x& key) {
+        return this->Data[key];
     }
 
     //Setters
@@ -110,6 +119,39 @@ public:
         }
     }
 
+    //update multiple keys and values
+    void update_multiple_Keys(const vector<x>& keys, const vector<y>& vals) {
+
+        if (keys.size() != vals.size()) {
+            cout << "Not equal size of keys and values" <  endl;
+            return;
+        }
+
+        for (int i = 0;i < keys.size();i++) {
+            update_key(keys[i], vals[i]);
+        }
+    }
+    //update key value
+    void update_key(const x& key, const y& val) {
+        if (Data.find(key) != Data.end()) {
+            Data[key] = val;
+            return;
+        }
+        else {
+            char yn;
+            cout << "Key : " << key << " does not exist in Collection.\nDo you want to add this key to collection? [Y/N] " << endl;
+            cin >> yn;
+            if (yn == 'y' || yn == 'Y') add_KeyValue_pair(key, val);
+            else return;
+        }
+    }
+
+    //clear the Data map for DataHolder
+    void clearData() {
+        this->Data.clear();
+    }
+
+    //print Data
     void printData() const {
         cout << endl << "DataHolder : " << this->ID;
         cout << endl << "{" << endl;
@@ -121,4 +163,4 @@ public:
     }
 };
 
-#endif // DATAHOLDER_H
+#endif // DATAHOLDER_HPP
