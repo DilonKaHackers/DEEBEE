@@ -1,5 +1,5 @@
-#ifndef DATAHOLDER_HPP
-#define DATAHOLDER_HPP
+#ifndef DATAHOLDER_H
+#define DATAHOLDER_H
 
 #include <unordered_map>
 #include <string>
@@ -119,18 +119,6 @@ public:
         }
     }
 
-    //update multiple keys and values
-    void update_multiple_Keys(const vector<x>& keys, const vector<y>& vals) {
-
-        if (keys.size() != vals.size()) {
-            cout << "Not equal size of keys and values" <  endl;
-            return;
-        }
-
-        for (int i = 0;i < keys.size();i++) {
-            update_key(keys[i], vals[i]);
-        }
-    }
     //update key value
     void update_key(const x& key, const y& val) {
         if (Data.find(key) != Data.end()) {
@@ -146,13 +134,30 @@ public:
         }
     }
 
+    //update multiple keys and values
+    void update_multiple_Keys(const vector<x>& keys, const vector<y>& vals) {
+
+        if (keys.size() != vals.size()) {
+            cout << "Not equal size of keys and values" << endl;
+            return;
+        }
+
+        for (int i = 0;i < keys.size();i++) {
+            update_key(keys[i], vals[i]);
+        }
+    }
+
     //clear the Data map for DataHolder
     void clearData() {
         this->Data.clear();
     }
 
     //print Data
-    void printData() const {
+    void printData() const{
+        if (this->Data.empty()) {
+            cout << "DataHolder has no data";
+            return;
+        }
         cout << endl << "DataHolder : " << this->ID;
         cout << endl << "{" << endl;
         for (const auto& pair : Data) {
@@ -163,4 +168,4 @@ public:
     }
 };
 
-#endif // DATAHOLDER_HPP
+#endif // DATAHOLDER_H
