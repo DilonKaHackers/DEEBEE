@@ -14,34 +14,26 @@ public:
 
     //DataHolder Functions
     // Getters
+
     string getID() const;
     unordered_map<x, y> getData() const;
-    void showCollectionNames(); // displays names of collection vectors
-    bool checkKey(x& key); // checks if a key is present in Data map
-    y getValue(x& key); // fetches value of a certain key
-    //updates vector to know what collections the dataHolder is in
-    void addInCollectionVector(string& collectionName); // adds collection name to the vector
-    void removeFromCollectionVector(string& collectionName);// removes collection name to the vector
+    void showCollectionNames(); 
+    bool checkKey(x& key); 
+    y getValue(x& key);
+
+    void addInCollectionVector(string& collectionName); 
+    void removeFromCollectionVector(string& collectionName);
     //functions
-    // Add a key with a default value
+
     void add_Key(const x& key);
-    // Add a key-value pair
     void add_KeyValue_pair(const x& key, const y& val);
-    // Add multiple key-value pairs
     void add_multiple_KeyValue_pairs(const vector<x>& keys, const vector<y>& vals);
-    // Add multiple keys with default values
     void add_multiple_Keys(const vector<x>& keys);
-    // Remove a key
     void remove_Key(const x& key);
-    // Remove multiple keys
     void remove_multiple_Keys(const vector<x>& keys);
-    //update multiple keys and values
     void update_multiple_Keys(const vector<x>& keys, const vector<y>& vals);
-    //update key value
     void update_key(const x& key, const y& val);
-    //clear the Data map for DataHolder
     void clearData();
-    //prints Data map
     void printData();
 };
 
@@ -59,28 +51,22 @@ public:
     // Constructors
     Collections(const string& collectionName) : collection_name(collectionName) {}
     Collections() = default;
+
     //getter
     string getCollectionName() ;
     unordered_map<string, DataHolder<x, y>> getCollectionMap();
     DataHolder<x, y> getDataHolder(string nameOfDataHolder);    
+
     //Functions
-    //Checks if dataholder exists with dataholder->ID parameter
+
     bool exists(string nameOfDataHolder);
-    //Checks if dataholder exists with dataholder parameter
     bool exists(DataHolder<x, y>& dataHolder);
-    // Add a DataHolder by ID
     void add_to_collection(DataHolder<x, y>& dataHolder);
-    // Add multiple DataHolders
     void add_multiple_dataHolders(vector<DataHolder<x, y>*>& dataHolders);
-    // Remove a DataHolder by ID
     void remove_from_collection(DataHolder<x, y>& dataHolder);
-    // Remove multiple DataHolders by IDs
     void remove_multiple_dataHolders(vector<DataHolder<x, y>*>& dataHolders)
-    // Print the collection
     void printCollection() const;
-    //rename collection
     void renameCollection();
-    //clean collectionMap
     void clearCollection();
 };
 
@@ -93,9 +79,15 @@ class DB {
 private:
 	vector <Collections<x, y>> allCollections;
 public:
-	 
-	void listDB(); //prints list of collections in DB
-	void add_to_DB(Collections<x, y>& collection); // adds Collection to DB
-	void getInfo(string collectionName, string dataHolderName, x criterionName) // fetches value for criterion of a DataHolder of a collection in DB class vector, allCollections
+
+        bool collectionExists(string collectionName);
+	Collections<x,y> getCollection (string collectionName);
+
+	void listDB();
+	void add_to_DB(Collections<x, y>& collection); 
+	void remove_from_DB(Collections<x, y>& collection);
+	void remove_from_DB(string collectionName);
+
+	void mergeCollections(string collection1, string collection2, string newCollection);
 
 };
