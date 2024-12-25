@@ -78,6 +78,10 @@ public:
     void remove_multiple_dataHolders(vector<DataHolder<x, y>*>& dataHolders)
     // Print the collection
     void printCollection() const;
+    //rename collection
+    void renameCollection();
+    //clean collectionMap
+    void clearCollection();
 };
 
 
