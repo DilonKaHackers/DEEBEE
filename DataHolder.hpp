@@ -1,5 +1,5 @@
-#ifndef DATAHOLDER_H
-#define DATAHOLDER_H
+#ifndef DATAHOLDER_HPP
+#define DATAHOLDER_HPP
 
 #include <unordered_map>
 #include <string>
@@ -187,4 +187,4 @@ public:
 
 };
 
-#endif // DATAHOLDER_H
+#endif // DATAHOLDER_HPP
