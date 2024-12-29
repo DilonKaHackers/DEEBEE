@@ -1,35 +1,34 @@
-#include "Collections.hpp"
+#include "theDB.hpp"
 
 using namespace std;
 int main() {
 
-    Collections<int, string> collection1("TestCollection1");
-    Collections<int, string> collection2("TestCollection2");
-    Collections<int, string> collection3("TestCollection3");
+    DataHolder<string, string> JOE("Joe");
+    DataHolder<string, string> JOHN("John");
+    DataHolder<string, string> JOHN2("John");
 
-    DataHolder<int, string> dh1("DH1");
-    DataHolder<int, string> dh2("DH2");
-    DataHolder<int, string> dh3("DH3");
+    Collections<string, string> CLERKS("Clerks");
+    Collections<string, string> MANGERS("managers");
 
-    vector<DataHolder<int, string>*> addDhVector = { &dh1, &dh2, &dh3 };
-    vector<DataHolder<int, string>*> removeDhVector = { &dh1, &dh2 };
+    vector<DataHolder<string, string>*> addPeopleVector = { &JOHN, &JOE };
 
+    JOE.add_KeyValue_pair("name", "Joe");
+    JOE.add_KeyValue_pair("age", "28");
+    JOE.add_KeyValue_pair("salary", "20K");
 
-    // Adding individually
-    collection1.add_to_collection(dh1);
+    JOHN.add_KeyValue_pair("name", "John");
+    JOHN.add_KeyValue_pair("age", "35");
+    JOHN.add_KeyValue_pair("salary", "90K");
 
-    collection2.add_multiple_dataHolders(addDhVector);
-    collection3.add_multiple_dataHolders(addDhVector);
+    JOHN2.add_KeyValue_pair("addr", "potheri");
+    JOHN2.add_KeyValue_pair("phn num", "246583215513");
+    JOHN2.add_KeyValue_pair("salary", "105k");
 
-   
-    dh1.showCollectionNames();
-    dh2.showCollectionNames();
-    dh3.showCollectionNames();
+    CLERKS.add_multiple_dataHolders(addPeopleVector);
+    CLERKS.printCollection();
 
-    collection2.remove_multiple_dataHolders(removeDhVector);
-
-    dh1.showCollectionNames();
-    dh2.showCollectionNames();
+    CLERKS.remove_from_collection("John");
+    CLERKS.printCollection();
 
     return 0;
 }
