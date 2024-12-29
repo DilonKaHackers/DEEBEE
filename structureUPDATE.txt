@@ -103,6 +103,7 @@ public:
     void merge_collections(string collectionName1, string collectionName2, string newCollectionName);
     void merge_multiple_collections(vector<Collections<x, y>> collections, string newCollectionName);
     void merge_multiple_collections(vector<string> collectionNames, string newCollectionName);
-    void fetchDataHolderInfo(const string& dataHolderName);
+    void fetch_dataholder_Info_from_DB(const string& dataHolderName);
+    void delete_dataHolder_from_DB(const string& dataHolderName);
 
 };
