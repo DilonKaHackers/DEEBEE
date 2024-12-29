@@ -4,8 +4,10 @@
 #include <unordered_map>
 #include <string>
 #include <vector>
-#include <iostream>
 #include <algorithm>
+#include <iostream>
+#include <memory>
+#include <tuple>
 
 using namespace std;
 
@@ -19,13 +21,19 @@ private:
 public:
     //DataHolder Constructors
     DataHolder(const string& name) : ID(name) {}
-
     DataHolder() = default;
-
-    //DataHolder Functions
+    
+    //Functions
+ 
     // Getters
-    string getID() const { return this->ID; }
-    unordered_map<x, y> getData() const { return this->Data; }
+    string getID() const {
+        return this->ID; 
+    }
+
+    unordered_map<x, y> getData() const { 
+        return this->Data; 
+    }
+
     void showCollectionNames() {
 
         cout << "Collections for " << this->ID << " : ";
@@ -35,29 +43,59 @@ public:
         cout << endl;
     }
 
-    bool checkKey(x& key) {
-        bool ans = false;
-        if (this->Data.find(key) != this->Data.end()) {
-            ans = true;
-        }
-        return ans;
-    }
-
-    y getValue(x& key) {
-        return this->Data[key];
-    }
-
     //Setters
-    //updates vector to know what collections the dataHolder is in
     void addInCollectionVector(string& collectionName) {
         namesOfCollections.push_back(collectionName);
+    }
+
+    void setData(unordered_map<x, y> MAP) {
+        this->Data = MAP;
+    }
+
+    void setID(string name) {
+        this->ID = name;
     }
 
     void removeFromCollectionVector(string& collectionName) {
         namesOfCollections.erase(find(namesOfCollections.begin(), namesOfCollections.end(), collectionName));
     }
 
-    //functions
+    //Helper Functions
+    bool checkKey(x& key) {
+
+        if (this->Data.find(key) != this->Data.end()) {
+            return true;
+        }
+        return false;
+    }
+
+    y getValue(x& key) {
+        return this->Data[key];
+    }
+
+    void clearData() {
+        this->Data.clear();
+    }
+
+    bool isEmpty() {
+        return this->Data.empty();
+    }
+
+    //print Data
+    void printData() const {
+        if (this->Data.empty()) {
+            cout << "DataHolder has no data";
+            return;
+        }
+        cout << "DataHolder : " << this->ID;
+        cout << endl << "{" << endl;
+        for (const auto& pair : Data) {
+            cout << pair.first << " : " << pair.second << endl;
+        }
+        cout << "}" << endl;
+    }
+
+    //Major 
     // Add a key with a default value
     void add_Key(const x& key) {
         if (Data.find(key) != Data.end()) {
@@ -147,25 +185,6 @@ public:
         }
     }
 
-    //clear the Data map for DataHolder
-    void clearData() {
-        this->Data.clear();
-    }
-
-    //print Data
-    void printData() const{
-        if (this->Data.empty()) {
-            cout << "DataHolder has no data";
-            return;
-        }
-        cout << endl << "DataHolder : " << this->ID;
-        cout << endl << "{" << endl;
-        for (const auto& pair : Data) {
-            cout << pair.first << " : " << pair.second << endl;
-        }
-        cout << "}" << endl;
-
-    }
 };
 
 #endif // DATAHOLDER_H
