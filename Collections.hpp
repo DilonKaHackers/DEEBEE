@@ -2,8 +2,6 @@
 #define COLLECTIONS_HPP
 
 #include "DataHolder.hpp"
-#include <unordered_map>
-#include <iostream>
 
 template<typename x, typename y>
 class Collections {
@@ -17,37 +15,65 @@ public:
     Collections() = default;
 
     //getter
-    string getCollectionName(){
+    string getCollectionName() {
         return this->collection_name;
     }
-    unordered_map<string, DataHolder<x, y>> getCollectionMap(){
+
+    unordered_map<string, DataHolder<x, y>>& getCollectionMap() {
         return this->collectionMap;
     }
-    DataHolder<x, y> getDataHolder(string nameOfDataHolder) {
+
+    DataHolder<x, y>& getDataHolder(string nameOfDataHolder) {
         if (collectionMap.find(nameOfDataHolder) != collectionMap.end()) {
             return collectionMap[nameOfDataHolder];
         }
     }
 
-    //exists 
-    //Checks if dataholder exists with dataholder id
-    bool exists(string nameOfDataHolder) {
-        bool ans = false;
-        
-        if (collectionMap.find(nameOfDataHolder) != collectionMap.end()) {
-            ans = true;          
-        }
-        return ans;
+    //setter
+    void setCollectionMap(unordered_map<string, DataHolder<x, y>> newCollectionMap) {
+        this->collectionMap = newCollectionMap;
     }
-    //Checks if dataholder exists with dataholder parameter
-    bool exists(DataHolder<x,y> theDataHolder) {
-        bool ans = false;
+    void setCollectionName(string name) {
+        this->collection_name = name;
+    }
 
-        if (collectionMap.find(theDataHolder.getID()) != collectionMap.end()) {
-            ans = true;
+    //Helper functions
+    bool exists(string nameOfDataHolder) {
+        if (collectionMap.find(nameOfDataHolder) != collectionMap.end()) {
+            return true;
         }
-        return ans;
+        return false;
     }
+
+    bool exists(DataHolder<x, y> theDataHolder) {
+        if (collectionMap.find(theDataHolder.getID()) != collectionMap.end()) {
+            return true;
+        }
+        return false;
+    }
+
+    void renameCollection(const string& newCollectionName) {
+        setCollectionName(newCollectionName);
+    }
+
+    void clearCollection() {
+        this->collectionMap.clear();
+    }
+
+    // Print the collection
+    void printCollection() const {
+        if (this->collectionMap.empty()) {
+            cout << "Collection has no data";
+            return;
+        }
+        cout << "Collection name: " << collection_name << endl << endl;
+        for (const auto& pair : collectionMap) {
+            pair.second.printData();
+            cout << endl;
+        }
+    }
+
+    //Major
     // Add a DataHolder by ID
     void add_to_collection(DataHolder<x, y>& dataHolder) {
 
@@ -64,7 +90,6 @@ public:
         }
     }
 
-
     // Add multiple DataHolders
     void add_multiple_dataHolders(vector<DataHolder<x, y>*>& dataHolders) {
 
@@ -78,65 +103,46 @@ public:
         }
     }
 
-
-    // Remove a DataHolder by ID
+    // Remove a DataHolder by reference
     void remove_from_collection(DataHolder<x, y>& dataHolder) {
-
-        string CN = this->collection_name;
         string id = dataHolder.getID();
 
-        if (collectionMap.find(id) != collectionMap.end()) {
-            dataHolder.removeFromCollectionVector(CN);
-            collectionMap.erase(id);
-            cout << "DataHolder: " << id << " removed from the collection: " << collection_name << endl;
+        auto it = collectionMap.find(id);
+        if (it != collectionMap.end()) {
+            collectionMap.erase(it);
+            cout << "DataHolder \"" << id << "\" removed from collection \"" << collection_name << "\"." << endl;
         }
         else {
-            cout << "DataHolder: " << id << " not found the collection: " << collection_name << endl;
+            cout << "DataHolder \"" << id << "\" not found in collection \"" << collection_name << "\"." << endl;
         }
     }
 
-    // Remove multiple DataHolders by IDs
-    void remove_multiple_dataHolders(vector<DataHolder<x, y>*>& dataHolders) {
-
-        for (auto* dataHolder : dataHolders) {
-            if (dataHolder != nullptr) {
-                remove_from_collection(*dataHolder);
-            }
-            else {
-                cout << "Null DataHolder encountered, skipping." << endl;
-            }
+    // Remove a DataHolder by ID
+    void remove_from_collection(const string& dataHolderName) {
+        auto it = collectionMap.find(dataHolderName);
+        if (it != collectionMap.end()) {
+            collectionMap.erase(it);
+            cout << "DataHolder \"" << dataHolderName << "\" removed from collection \"" << collection_name << "\"." << endl;
+        }
+        else {
+            cout << "DataHolder \"" << dataHolderName << "\" not found in collection \"" << collection_name << "\"." << endl;
         }
     }
 
-    // Print the collection
-    void printCollection() const {
-        if (this->collectionMap.empty()) {
-            cout << "Collection has no data";
-            return;
+    // Remove multiple DataHolders by ID
+    void remove_multiple_dataHolders(const vector<string>& dataHolderNames) {
+        for (const auto& name : dataHolderNames) {
+            remove_from_collection(name);
         }
-        cout << endl << "Collection name: " << collection_name << endl;
-        for (const auto& pair : collectionMap) {
-            cout << "ID: " << pair.first << endl;
-            pair.second.printData();
-        }
-    }
-    // rename Collection
-    void renameCollection(const string& newCollectionName) {
-        this->collection_name = newCollectionName;
     }
 
-    //clear collectionMap for a collection
-    void clearCollection() {
-        this->collectionMap.clear();
+    // Remove multiple DataHolders by reference
+    void remove_multiple_dataHolders(const vector<DataHolder<x, y>>& dataHolders) {
+        for (const auto& dataHolder : dataHolders) {
+            remove_from_collection(dataHolder);
+        }
     }
 
 };
 
 #endif // COLLECTIONS_HPP
-
-
-
-
-
-
-
