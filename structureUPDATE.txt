@@ -1,6 +1,4 @@
-//DataHolder class
 
-template<typename x, typename y>
 class DataHolder {
 private:
     vector <string> namesOfCollections;
@@ -11,40 +9,43 @@ public:
     //DataHolder Constructors
     DataHolder(const string& name) : ID(name) {}
     DataHolder() = default;
-
-    //DataHolder Functions
+    
+    //Functions
+ 
     // Getters
-
     string getID() const;
     unordered_map<x, y> getData() const;
-    void showCollectionNames(); 
-    bool checkKey(x& key); 
-    y getValue(x& key);
+    void showCollectionNames();
 
-    void addInCollectionVector(string& collectionName); 
+    //Setters
+    void addInCollectionVector(string& collectionName);
+    void setData(unordered_map<x, y> MAP);
+    void setID(string name);
     void removeFromCollectionVector(string& collectionName);
-    //functions
+    
+    //Helper Functions
+    bool checkKey(x& key);
+    y getValue(x& key);
+    void clearData();
+    bool isEmpty();
+    void printData() const;
 
+    //Major 
     void add_Key(const x& key);
     void add_KeyValue_pair(const x& key, const y& val);
     void add_multiple_KeyValue_pairs(const vector<x>& keys, const vector<y>& vals);
     void add_multiple_Keys(const vector<x>& keys);
     void remove_Key(const x& key);
     void remove_multiple_Keys(const vector<x>& keys);
-    void update_multiple_Keys(const vector<x>& keys, const vector<y>& vals);
     void update_key(const x& key, const y& val);
-    void clearData();
-    void printData();
+    void update_multiple_Keys(const vector<x>& keys, const vector<y>& vals);
+
 };
 
 
-//Collection class
-
-
-template<typename x, typename y>
 class Collections {
 private:
-    string collection_name = "NONE_COLLECTION_NAME";
+    string collection_name;
     unordered_map<string, DataHolder<x, y>> collectionMap;
 
 public:
@@ -53,41 +54,55 @@ public:
     Collections() = default;
 
     //getter
-    string getCollectionName() ;
-    unordered_map<string, DataHolder<x, y>> getCollectionMap();
-    DataHolder<x, y> getDataHolder(string nameOfDataHolder);    
+    string getCollectionName();
+    unordered_map<string, DataHolder<x, y>> &getCollectionMap();
+    DataHolder<x, y> &getDataHolder(string nameOfDataHolder);
 
-    //Functions
+    //setter
+    void setCollectionMap(unordered_map<string, DataHolder<x, y>> newCollectionMap);
+    void setCollectionName(string name);
 
+    //Helper functions
     bool exists(string nameOfDataHolder);
-    bool exists(DataHolder<x, y>& dataHolder);
+    bool exists(DataHolder<x, y> theDataHolder);
+    void renameCollection(const string& newCollectionName);
+    void clearCollection();
+    void printCollection() const;
+
+    //Major
     void add_to_collection(DataHolder<x, y>& dataHolder);
     void add_multiple_dataHolders(vector<DataHolder<x, y>*>& dataHolders);
     void remove_from_collection(DataHolder<x, y>& dataHolder);
-    void remove_multiple_dataHolders(vector<DataHolder<x, y>*>& dataHolders)
-    void printCollection() const;
-    void renameCollection();
-    void clearCollection();
+    void remove_from_collection(const string& dataHolderName);
+    void remove_multiple_dataHolders(const vector<string>& dataHolderNames);
+    void remove_multiple_dataHolders(const vector<DataHolder<x, y>>& dataHolders0;
+
 };
 
 
-//DB class
-
-template <typename x, typename y>
 class DB {
-
 private:
-	vector <Collections<x, y>> allCollections;
+    unordered_map<string, shared_ptr<Collections<x, y>>> allCollections;
+
+    //private Helpers
+    void merge_multiple(vector<string> collectionNames, string newCollectionName);
+    void merge_(string collectionName1, string collectionName2, string newCollectionName);
+
 public:
 
-        bool collectionExists(string collectionName);
-	Collections<x,y> getCollection (string collectionName);
+    //Helper Functions
+    bool check_collection_in_DB(string theCollectionName);
+    bool check_collection_in_DB(Collections<x, y>& theCollection);
+    shared_ptr<Collections<x, y>> get_collection_from_DB(const string& collectionName);
+    void list_DB();
 
-	void listDB();
-	void add_to_DB(Collections<x, y>& collection); 
-	void remove_from_DB(Collections<x, y>& collection);
-	void remove_from_DB(string collectionName);
-
-	void mergeCollections(string collection1, string collection2, string newCollection);
+    //Major
+    void add_to_DB(Collections<x,y> &theCollection);
+    void remove_from_DB(Collections<x, y>& theCollection);
+    void merge_collections(Collections<x, y> c1, Collections<x, y> c2, string nc);
+    void merge_collections(string collectionName1, string collectionName2, string newCollectionName);
+    void merge_multiple_collections(vector<Collections<x, y>> collections, string newCollectionName);
+    void merge_multiple_collections(vector<string> collectionNames, string newCollectionName);
+    void fetchDataHolderInfo(const string& dataHolderName);
 
 };
