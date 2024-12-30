@@ -4,8 +4,19 @@ private:
     vector <string> namesOfCollections;
     string ID = "NULL_ID";
     unordered_map<x, y> Data;
+    string IDFilePath;
+    map<int, unordered_map<x, y>> AllStatesOfData;
+    bool begin = false;
+    int commit_count = 1;
 
 public:
+    //Transaction functions
+    void rollBack_full();
+    void rollBackTransaction();
+    void rollBackTransaction(int n);
+    void beginTransaction();
+    void commitTransaction();
+
     //DataHolder Constructors
     DataHolder(const string& name) : ID(name) {}
     DataHolder() = default;
@@ -16,18 +27,31 @@ public:
     string getID() const;
     unordered_map<x, y> getData() const;
     void showCollectionNames();
+    string getIDFilePath();
+    bool checkBegin();
+
+    //File Functions
+    void exportData();
+    void importData(const string &fileName);
 
     //Setters
     void addInCollectionVector(string& collectionName);
     void setData(unordered_map<x, y> MAP);
     void setID(string name);
     void removeFromCollectionVector(string& collectionName);
-    
+    void setIDFilePath(fs::path FilePath);
+    void renameID(string newName);
+
     //Helper Functions
     bool checkKey(x& key);
     y getValue(x& key);
     void clearData();
     bool isEmpty();
+    size_t countEntries()const;
+    void writeData(const fs::path& filePath);
+    string trimData(string& input);
+    void setKeyValueToData(string& input);
+    vector <x> extractKeys(unordered_map<x, y> theMap);
     void printData() const;
 
     //Major 
@@ -39,6 +63,7 @@ public:
     void remove_multiple_Keys(const vector<x>& keys);
     void update_key(const x& key, const y& val);
     void update_multiple_Keys(const vector<x>& keys, const vector<y>& vals);
+    vector<x> searchByValue(const y& value);
 
 };
 
@@ -47,6 +72,7 @@ class Collections {
 private:
     string collection_name;
     unordered_map<string, DataHolder<x, y>> collectionMap;
+    string collection_nameFilePath;
 
 public:
     // Constructors
@@ -57,17 +83,26 @@ public:
     string getCollectionName();
     unordered_map<string, DataHolder<x, y>> &getCollectionMap();
     DataHolder<x, y> &getDataHolder(string nameOfDataHolder);
-
+    string getcollection_nameFilePath();
+    
     //setter
     void setCollectionMap(unordered_map<string, DataHolder<x, y>> newCollectionMap);
     void setCollectionName(string name);
+    void setcollection_nameFilePath(fs::path FilePath);
 
     //Helper functions
     bool exists(string nameOfDataHolder);
     bool exists(DataHolder<x, y> theDataHolder);
     void renameCollection(const string& newCollectionName);
     void clearCollection();
+    size_t count_total_entries();
+    vector<pair<string, size_t>> entries_per_dataholder();
+    void writeData(const fs::path& FilePath);
     void printCollection() const;
+
+    //import,export
+    void export_collection();
+    void import_collection();
 
     //Major
     void add_to_collection(DataHolder<x, y>& dataHolder);
@@ -75,7 +110,9 @@ public:
     void remove_from_collection(DataHolder<x, y>& dataHolder);
     void remove_from_collection(const string& dataHolderName);
     void remove_multiple_dataHolders(const vector<string>& dataHolderNames);
-    void remove_multiple_dataHolders(const vector<DataHolder<x, y>>& dataHolders0;
+    void remove_multiple_dataHolders(const vector<DataHolder<x, y>>& dataHolders);
+    vector<DataHolder<x, y>> search_by_value_in_collection(const y& value);
+    Collections<x, y> subset_collection(const vector<string>& dataHolderNames);
 
 };
 
