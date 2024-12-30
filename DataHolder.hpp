@@ -1,5 +1,5 @@
-#ifndef DATAHOLDER_H
-#define DATAHOLDER_H
+#ifndef DATAHOLDER_HPP
+#define DATAHOLDER_HPP
 
 #include <unordered_map>
 #include <map>
@@ -26,7 +26,7 @@ private:
     string IDFilePath;
 
     //Transaction Maps
-    map<int,unordered_map<x, y>> AllStatesOfData;
+    map<int, unordered_map<x, y>> AllStatesOfData;
 
     //transaction manage
     bool begin = false;
@@ -34,16 +34,7 @@ private:
 
 public:
     //Transaction functions
-    void printAllStates() {
-        for (const auto& pair : this->AllStatesOfData) {
-            cout << "commit count : " << pair.first<<endl;
-            for (const auto& inner : pair.second) {
-                cout << inner.first << " : " << inner.second << endl;
-            }
-        }
-        cout << endl;
-    }
-    
+    //Provides a full rollback to get to the first pos in AllStatesOfData
     void rollBack_full() {
         if (AllStatesOfData.empty()) {
             cout << "No transaction history exists. Rollback not possible." << endl;
@@ -52,11 +43,11 @@ public:
 
         cout << "Are you sure you want a full rollback? [Y for yes]\n";
         char yn;
-        cin >> yn; 
+        cin >> yn;
         if (yn == 'y' || yn == 'Y') {
             this->Data = AllStatesOfData.begin()->second;
-            AllStatesOfData.clear(); 
-            commit_count = 0; 
+            AllStatesOfData.clear();
+            commit_count = 0;
             cout << "Full rollback completed. All transaction history has been cleared.\n";
             cout << "You must begin a new transaction to resume tracking changes.\n";
         }
@@ -65,10 +56,12 @@ public:
         }
     }
 
+    //single rollBack
     void rollBackTransaction() {
         rollBackTransaction(1);
     }
 
+    //rollback n times
     void rollBackTransaction(int n) {
 
         if (AllStatesOfData.empty()) {
@@ -81,12 +74,13 @@ public:
         }
         n++;
         auto target = next(AllStatesOfData.begin(), commit_count - n - 1);
-        this->Data = target->second; 
+        this->Data = target->second;
         AllStatesOfData.erase(next(target), AllStatesOfData.end());
-        commit_count -= n; 
+        commit_count -= n;
         cout << "Rollback by " << n << " steps completed successfully." << endl;
     }
 
+    //transaction init
     void beginTransaction() {
         if (!this->begin) {
             this->begin = true;
@@ -94,9 +88,10 @@ public:
             commit_count++;
             cout << "Current state of DataHolder : " << this->ID << " Recorded.\nTransaction begins\n";
         }
-        else cout << "Already started recording changes for DataHolder : " << this->ID<<endl;
+        else cout << "Already started recording changes for DataHolder : " << this->ID << endl;
     }
 
+    //commit transaction
     void commitTransaction() {
 
         if (!this->begin) {
@@ -107,7 +102,7 @@ public:
         if (AllStatesOfData.size() >= 6) {
             cout << endl << "All ready History of 10 commits." << endl;
             cout << "Do you want to still record this commit ? \nThe Initial state of Data will change to the Immediate next commit" << endl;
-            cout<<"[Y for yes]"<<endl;
+            cout << "[Y for yes]" << endl;
             char yn;
             cin >> yn;
             if (yn == 'y' || yn == 'Y') {
@@ -118,10 +113,10 @@ public:
                 cout << "All Updates Recorded for " << this->ID << endl << "Transaction Succesfully Commited" << endl;
             }
             return;
-        } 
+        }
         this->AllStatesOfData[this->commit_count] = this->Data;
         this->commit_count++;
-        cout << "All Updates Recorded for " << this->ID << endl << "Transaction Succesfully Commited"<<endl;
+        cout << "All Updates Recorded for " << this->ID << endl << "Transaction Succesfully Commited" << endl;
     }
     //DataHolder Constructors
     DataHolder(const string& name) : ID(name) {}
@@ -176,12 +171,12 @@ public:
         this->IDFilePath = FilePath.string();
     }
 
-    void renameDataHolder(string newName) {
+    void renameID(string newName) {
         this->ID = newName;
         string newfilePath = newName + "_DataHolderFile.txt";
         setIDFilePath(newfilePath);
     }
-    
+
     //File Functions
     void exportData() {
         try {
@@ -210,7 +205,7 @@ public:
 
             string newContent = trimData(content);
             setKeyValueToData(newContent);
-            cout << "imported details from "<< fileName << " to " << this->ID << endl;
+            cout << "imported details from " << fileName << " to " << this->ID << endl;
         }
         catch (const exception& e) {
             cerr << "Error: " << e.what() << endl;
@@ -242,7 +237,7 @@ public:
         return this->Data.size();
     }
 
-    void writeData(const fs::path &filePath) {
+    void writeData(const fs::path& filePath) {
 
         ofstream exportFile(filePath);
         if (!exportFile.is_open()) {
@@ -259,12 +254,12 @@ public:
         cout << "Export file for " << this->ID << " created at : " << filePath << endl;
     }
 
-    string trimData(string &input) {
+    string trimData(string& input) {
 
         size_t start = input.find('{');
         size_t end = input.find('}');
         if (start != string::npos && end != string::npos) {
-            input = input.substr(start + 1, end - start - 1); 
+            input = input.substr(start + 1, end - start - 1);
         }
         return input;
     }
@@ -288,6 +283,7 @@ public:
             }
         }
     }
+
     vector <x> extractKeys(unordered_map<x, y> theMap) {
         vector<x> allKeys;
         for (const auto& pair : theMap) {
@@ -300,7 +296,8 @@ public:
         vector<x> CurrentThisDataKeys = extractKeys(this->Data);
         vector<x> thisDataKeys;
     }
-    //print Data
+
+
     void printData() const {
         if (this->Data.empty()) {
             cout << "DataHolder has no data";
@@ -417,4 +414,4 @@ public:
 
 };
 
-#endif // DATAHOLDER_H
+#endif // DATAHOLDER_HPP
