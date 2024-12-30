@@ -75,6 +75,13 @@ private:
     string collection_nameFilePath;
 
 public:
+    //Transaction functions
+    void rollBack_full();
+    void rollBackTransaction();
+    void rollBackTransaction(int n);
+    void beginTransaction();
+    void commitTransaction();
+
     // Constructors
     Collections(const string& collectionName) : collection_name(collectionName) {}
     Collections() = default;
