@@ -10,7 +10,99 @@ private:
     unordered_map<string, DataHolder<x, y>> collectionMap;
     string collection_nameFilePath;
 
+    //Transaction Maps
+    map<int, unordered_map<string, DataHolder<x, y>>> AllStatesOfCollection;
+
+    //Transaction manage
+    bool begin_c = false;
+    int commit_count_c = 1;
+
 public:
+    //Transaction functions
+    //Provides a full rollback to get to the first pos in AllStatesOfCollection
+    void rollBack_full() {
+        if (AllStatesOfCollection.empty()) {
+            cout << "No transaction history exists for Collection : " << this->collection_name << ".Rollback not possible." << endl;
+            return;
+        }
+
+        cout << "Are you sure you want a full rollback? [Y for yes]\n";
+        char yn;
+        cin >> yn;
+        if (yn == 'y' || yn == 'Y') {
+            this->collectionMap = AllStatesOfCollection.begin()->second;
+            AllStatesOfCollection.clear();
+            commit_count_c = 0;
+            cout << "Full rollback completed. All transaction history has been cleared for this collection.\n";
+            cout << "You must begin a new transaction to resume tracking changes.\n";
+        }
+        else {
+            cout << "Full rollback cancelled.\n";
+        }
+    }
+
+    //rollback n times
+    void rollBackTransaction(int n) {
+
+        if (AllStatesOfCollection.empty()) {
+            cout << "No transaction history exists. Rollback not possible." << endl;
+            return;
+        }
+        if (n < 0 || n >= commit_count_c) {
+            cout << "Invalid rollback request. Rollback not possible." << endl;
+            return;
+        }
+        auto target = next(AllStatesOfCollection.begin(), commit_count_c - n - 1);
+        this->collectionMap = target->second;
+        AllStatesOfCollection.erase(next(target), AllStatesOfCollection.end());
+        commit_count_c -= n;
+        cout << "Rollback by " << n << " steps completed successfully for this Collection." << endl;
+    }
+
+    //single rollBack
+    void rollBackTransaction() {
+        rollBackTransaction(1);
+    }
+
+    //transaction init
+    void beginTransaction() {
+        if (!this->begin_c) {
+            this->begin_c = true;
+            this->AllStatesOfCollection[this->commit_count_c] = this->collectionMap;
+            commit_count_c++;
+            cout << "Current state of Collection : " << this->get_collection_name() << " Recorded.\nTransaction begins\n";
+        }
+        else cout << "Already started recording changes for Collection : " << this->get_collection_name() << endl;
+    }
+
+    //commit transaction
+    void commitTransaction() {
+
+        if (!this->begin_c) {
+            cout << "No Records for Collection : " << this->get_collection_name() << "\nThe Transaction never began." << endl;
+            return;
+        }
+
+        if (AllStatesOfCollection.size() >= 3) {
+            cout << endl << "All ready History of 10 commits." << endl;
+            cout << "Do you want to still record this commit ? \nThe Initial state of Data will change to the Immediate next commit" << endl;
+            cout << "[Y for yes]" << endl;
+            char yn;
+            cin >> yn;
+            if (yn == 'y' || yn == 'Y') {
+                AllStatesOfCollection.erase(AllStatesOfCollection.begin());
+                cout << "Initial State deleted\nAdding the new state\n";
+                this->AllStatesOfCollection[this->commit_count_c] = this->collectionMap;
+                this->commit_count_c++;
+                cout << "All Updates Recorded for Collection : " << this->get_collection_name() << endl << "Transaction Succesfully Commited" << endl;
+            }
+            return;
+        }
+        this->AllStatesOfCollection[this->commit_count_c] = this->collectionMap;
+        this->commit_count_c++;
+        cout << "All Updates Recorded for " << this->get_collection_name() << endl << "Transaction Succesfully Commited" << endl;
+    }
+
     // Constructors
     Collections(const string& collectionName) : collection_name(collectionName) {}
     Collections() = default;
@@ -322,10 +414,3 @@ public:
 };
 
 #endif // COLLECTIONS_HPP
-
-
-
-
-
-
-
