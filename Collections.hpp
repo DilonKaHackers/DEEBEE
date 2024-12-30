@@ -8,6 +8,7 @@ class Collections {
 private:
     string collection_name;
     unordered_map<string, DataHolder<x, y>> collectionMap;
+    string collection_nameFilePath;
 
 public:
     // Constructors
@@ -15,26 +16,34 @@ public:
     Collections() = default;
 
     //getter
-    string getCollectionName() {
+    string get_collection_name() {
         return this->collection_name;
     }
 
-    unordered_map<string, DataHolder<x, y>>& getCollectionMap() {
-        return this->collectionMap;
+    unordered_map<string, DataHolder<x, y>>& get_collection_map() {
+        return this->collectionMap; 
     }
 
-    DataHolder<x, y>& getDataHolder(string nameOfDataHolder) {
+    DataHolder<x, y>& get_dataholder(string nameOfDataHolder) {
         if (collectionMap.find(nameOfDataHolder) != collectionMap.end()) {
             return collectionMap[nameOfDataHolder];
         }
     }
 
+    string getcollection_nameFilePath() {
+        return this->collection_nameFilePath;
+    }
+
     //setter
-    void setCollectionMap(unordered_map<string, DataHolder<x, y>> newCollectionMap) {
+    void set_collection_map(unordered_map<string, DataHolder<x, y>> newCollectionMap) {
         this->collectionMap = newCollectionMap;
     }
-    void setCollectionName(string name) {
+    void set_collection_name(string name) {
         this->collection_name = name;
+    }
+
+    void setcollection_nameFilePath(fs::path FilePath) {
+        this->collection_nameFilePath = FilePath.string();
     }
 
     //Helper functions
@@ -52,16 +61,70 @@ public:
         return false;
     }
 
-    void renameCollection(const string& newCollectionName) {
-        setCollectionName(newCollectionName);
+    void rename_collection(const string& newCollectionName) {
+        set_collection_name(newCollectionName);
+        string newfilePath = newCollectionName + "_CollectionFile.txt";
+        setcollection_nameFilePath(newfilePath);
     }
 
-    void clearCollection() {
+    void clear_collection() {
         this->collectionMap.clear();
     }
 
-    // Print the collection
-    void printCollection() const {
+    size_t count_total_entries() {
+        if (collectionMap.empty()) {
+            cout << "No DataHolders in the Collection : " << this->collection_name;
+            return;
+        }
+
+        size_t count = 0;
+        for (const auto& pair : this->collectionMap) {
+            const auto& dataholder = pair.second;
+            count += dataholder.getData().size();
+        }
+
+        return count;
+    }
+
+    vector<pair<string, size_t>> entries_per_dataholder() {
+        vector<pair<string, size_t>> result;
+
+        if (collectionMap.empty()) {
+            cout << "No DataHolders in the Collection: " << this->collection_name << endl << "Returning and empty Vector"<<endl;
+            return result; 
+        }
+
+        for (const auto& pair : this->collectionMap) {
+            const auto& dataHolder = pair.second;
+            size_t count = dataHolder.getData().size(); 
+            result.emplace_back(pair.first, count); 
+        }
+
+        return result; 
+    }
+    
+    void writeData(const fs::path& FilePath) {
+        ofstream exportFile(FilePath);
+        if (!exportFile.is_open()) {
+            cerr << "Failed to open file: " << FilePath << endl;
+            return;
+        }
+
+        exportFile << endl << this->collection_name<< endl;
+        for (const auto& pair : this->collectionMap) {
+            DataHolder<x, y> dataholder = pair.second;
+            exportFile << "DataHolder ID : " << pair.first<<endl;
+            exportFile << "{\n";
+            for (const auto &pairInner : dataholder.getData()) {
+                exportFile << pairInner.first << " : " << pairInner.second << "\n";
+            }
+            exportFile << "}\n\n";
+        }
+        cout << endl << "Export file for Collection : " << this->collection_name << " created at : " << FilePath << endl;
+    }
+
+   
+    void print_collection() const {
         if (this->collectionMap.empty()) {
             cout << "Collection has no data";
             return;
@@ -72,6 +135,87 @@ public:
             cout << endl;
         }
     }
+
+    //import, export
+    void export_collection() {
+        for (const auto& pair : this->collectionMap) {
+            DataHolder<x, y> dataholder = pair.second;
+            dataholder.exportData();
+        }
+
+        try {
+            fs::path current = fs::current_path() / "Collections";
+            fs::create_directories(current);
+
+            string fileName = this->collection_name + "_CollectionFile.txt";
+            fs::path exportFilePath = current / fileName;
+
+            setcollection_nameFilePath(exportFilePath);
+            writeData(exportFilePath);
+        }
+        catch (const exception& e) {
+            cerr << "Error: " << e.what() << endl;
+        }
+    }
+
+    void import_collection(const string& filePath) {
+        ifstream inputFile(filePath);
+        if (!inputFile.is_open()) {
+            cerr << "Error opening file: " << filePath << endl;
+            return;
+        }
+
+        string line;
+        bool isFirstLine = true;
+        string currentKey;
+
+        while (getline(inputFile, line)) {
+            line.erase(0, line.find_first_not_of(" \t"));
+            line.erase(line.find_last_not_of(" \t") + 1);
+
+            if (isFirstLine) {
+                set_collection_name(line);
+                isFirstLine = false;
+                continue;
+            }
+
+            if (line.empty()) {
+                continue;
+            }
+
+            if (line.find("DataHolder ID :") != string::npos) {
+                currentKey = line.substr(line.find(":") + 2);
+                continue;
+            }
+
+            if (line == "{") {
+                unordered_map<x, y> innerMap;
+
+                while (getline(inputFile, line) && line != "}") {
+                    line.erase(0, line.find_first_not_of(" \t"));
+                    line.erase(line.find_last_not_of(" \t") + 1);
+
+                    auto colonPos = line.find(':');
+                    if (colonPos != string::npos) {
+                        string key = line.substr(0, colonPos);
+                        string value = line.substr(colonPos + 2);
+                        innerMap[key] = value;
+                    }
+                }
+
+                DataHolder<x, y> tempDataHolder;
+                tempDataHolder.setData(innerMap);
+                tempDataHolder.setID(currentKey);
+
+                collectionMap[currentKey] = tempDataHolder;
+            }
+        }
+        fs::path path(filePath);
+        string newCollectionName = path.filename().string() + " (Imported)";
+        set_collection_name(newCollectionName);
+        inputFile.close();
+    }
+
 
     //Major
     // Add a DataHolder by ID
@@ -143,6 +287,45 @@ public:
         }
     }
 
+    //returns all the collections which have the specific value from collections
+    vector<DataHolder<x, y>> search_by_value_in_collection(const y& value) {
+        vector<DataHolder<x, y>> selectedDataHolders;
+        for (const auto& pair : this->collectionMap) {
+            DataHolder <x, y> dataholder = get_dataholder(pair.first);
+            unordered_map<x, y> theMap = dataholder.getData();
+            for (const auto& innerPair : theMap) {
+                if (innerPair.second == value) {
+                    selectedDataHolders.push_back(dataholder);
+                }
+            }
+        }
+        return selectedDataHolders;
+    }
+
+    //returns a subset collection
+    Collections<x, y> subset_collection(const vector<string>& dataHolderNames) {
+        Collections<x, y> theSubset;
+        unordered_map<string, DataHolder<x, y>> subsetCollectionMap;
+        for (const auto &dataholderElement : dataHolderNames) {
+            if (exists(dataholderElement)) {
+                DataHolder<x, y> tempDataHolder = get_dataholder(dataholderElement);
+                subsetCollectionMap[dataholderElement] = tempDataHolder;
+            }
+            else cout << "Skipping " << dataholderElement << " because it does not exist in Collection : "<< this->collection_name << endl;
+        }
+
+        theSubset.set_collection_map(subsetCollectionMap);
+        string subsetCollectionName = "subset_" + this->collection_name;
+        theSubset.set_collection_name(subsetCollectionName);
+        return theSubset;
+    }
 };
 
 #endif // COLLECTIONS_HPP
+
+
+
+
+
+
+
