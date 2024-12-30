@@ -292,12 +292,6 @@ public:
         return allKeys;
     }
 
-    void updateAddedRemoved() {
-        vector<x> CurrentThisDataKeys = extractKeys(this->Data);
-        vector<x> thisDataKeys;
-    }
-
-
     void printData() const {
         if (this->Data.empty()) {
             cout << "DataHolder has no data";
