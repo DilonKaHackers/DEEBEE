@@ -151,3 +151,21 @@ public:
     void delete_dataHolder_from_DB(const string& dataHolderName);
 
 };
+
+class Logger {
+private:
+    fs::path logFilePath;
+    ofstream logFileStream;
+    mutex logMutex;
+
+    string getCurrentTime() const;
+
+public:
+
+    Logger(const string& fileName = "logs.txt");
+    Logger(const Logger&) = delete;
+    Logger& operator=(const Logger&) = delete;
+    ~Logger();
+    void log(const string& message);
+};
+
